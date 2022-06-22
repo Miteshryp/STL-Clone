@@ -38,8 +38,11 @@ public:
    }
 
 
+// -----------------------
+// |    Methods
+// -----------------------
 
-// Methods
+// Essentials
    void push(const T& element) {
       if(m_size == m_block.m_capacity) {
          // reallocate block
@@ -59,6 +62,20 @@ public:
 
    int size() const { return m_size; }
 
+// Essential Function
+
+
+
+// Helper Functions
+   bool contains(const reference_type item) {
+      for(iterator i = this->begin(); i != this->end(); i++) {
+         if(*i == item) return true;     
+      }
+      return false;
+   }
+
+
+// Iterator functions
    iterator begin() {
       return iterator(&m_arr[0]);
    }

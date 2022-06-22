@@ -10,6 +10,35 @@ class BasicIterator {
 
 public:
 
+   BasicIterator()
+      :
+      m_ptr(nullptr)
+   {}
+
+   BasicIterator(ptr_type ptr)
+      :
+      m_ptr(ptr)
+   {}
+
+   BasicIterator(const BasicIterator& iterator)
+      :
+      m_ptr(iterator.m_ptr)
+   {}
+
+   BasicIterator(BasicIterator&& iterator)
+   {
+      m_ptr = iterator.m_ptr;
+   }
+
+   ~BasicIterator()
+   {
+      m_ptr = nullptr;
+   }
+
+
+
+
+
    reference_type operator *() const {
       return *(m_ptr);
    }
@@ -36,12 +65,16 @@ public:
       return tmp;
    }
 
+   void operator = (const BasicIterator& iterator) {
+      m_ptr = iterator.m_ptr;
+   }
 
-   friend bool operator != (const BasicIterator& i1,const BasicIterator& i2) {
+
+   friend bool operator != (const BasicIterator& i1, const BasicIterator& i2) const {
       return i1.m_ptr != i2.m_ptr;
    }
    
-   friend bool operator == (const BasicIterator& i1, const BasicIterator& i2) {
+   friend bool operator == (const BasicIterator& i1, const BasicIterator& i2) const {
       return i1.m_ptr == i2.m_ptr;
    }
 
@@ -66,6 +99,24 @@ protected:
 // private:
 //    ptr_type element;
 // };
+
+
+
+
+
+template<typename T>
+class LLNodeIterator  {
+   using value_type = T;
+   using ptr_type = T*;
+   using reference_type = T&;
+
+public:
+
+   LLNodeIterator()
+   {}
+private: 
+   value_type m_data;
+};
 
 
 };

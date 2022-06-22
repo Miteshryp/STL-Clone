@@ -38,7 +38,7 @@ namespace pixel {
 
 
 // Double Capacity Stratergy
-   PixelAllocation pixel_push_capacity_DC_stratergy(int elem_size, int curr_capacity) {
+   PixelAllocation pixel_push_capacity_DC_strategy(int elem_size, int curr_capacity) {
       int new_capacity = curr_capacity*2; // Total no of elements which can be stored.
       void* new_block = malloc(elem_size*new_capacity);
 
@@ -46,7 +46,7 @@ namespace pixel {
    }
 
 // Quarter Increase Statergy
-   PixelAllocation pixel_push_capacity_QuarterINC_stratergy(int elem_size, int curr_capacity) {
+   PixelAllocation pixel_push_capacity_QuarterINC_strategy(int elem_size, int curr_capacity) {
       assert(curr_capacity >= 4);//, "Cannot Increase Capacity - Quarter Startergy works for curr_capacity >= 4");
 
       int new_capacity = curr_capacity + (curr_capacity / 4); // Total no of elements which can be stored.
@@ -65,7 +65,7 @@ namespace pixel {
       
       if(curr_arr == nullptr) return PixelAllocation(nullptr, 0, 0);
 
-      PixelAllocation new_block = pixel_push_capacity_DC_stratergy(elem_size, curr_capacity);
+      PixelAllocation new_block = pixel_push_capacity_DC_strategy(elem_size, curr_capacity);
       void* new_arr = new_block.m_arr;
 
       // Copy the contents of the old array into the new extended array
