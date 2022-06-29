@@ -70,11 +70,11 @@ public:
    }
 
 
-   friend bool operator != (const BasicIterator& i1, const BasicIterator& i2) const {
+   friend bool operator != (const BasicIterator& i1, const BasicIterator& i2) {
       return i1.m_ptr != i2.m_ptr;
    }
    
-   friend bool operator == (const BasicIterator& i1, const BasicIterator& i2) const {
+   friend bool operator == (const BasicIterator& i1, const BasicIterator& i2) {
       return i1.m_ptr == i2.m_ptr;
    }
 

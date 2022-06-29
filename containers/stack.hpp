@@ -99,7 +99,7 @@ private:
 
    ptr_type m_arr;
    int m_size;
-   PixelAllocation m_block;
+   PixelMemoryBlock m_block;
 };
 
 }
