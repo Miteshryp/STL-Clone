@@ -9,46 +9,43 @@ class Pixel_LL_Node {
     using reference_type = T&;
     using ptr_type = T*;
 
+    using node_type = Pixel_LL_Node<T>;
+    using node_ptr = Pixel_LL_Node<T>*;
+    using node_reference = Pixel_LL_Node<T>&;
+
+public:
     // data
     value_type m_data;
-    struct Pixel_LL_Node* m_next;
+    struct node_ptr m_next;
 };
 
 
 template<typename T>
-class Pixel_DLL_Node {
+class list {
     using value_type = T;
     using reference_type = T&;
     using ptr_type = T*;
 
-    // data
-    value_type m_data;
-    struct Pixel_LL_Node* prev;
-    struct Pixel_LL_Node* next;
-};
+    using list_type = list<T>;
+    using list_reference_type = list<T>&;
+    using list_Rreference_type = list<T>&&;
+    using list_ptr_type = list<T>*;
 
-
-
-template<typename T>
-class LinkedList {
-    using value_type = T;
-    using reference_type = T&;
-    using ptr_type = T*;
 
     using node_type = Pixel_LL_Node<value_type>;
-    using node_ptr = node_type*;
+    using node_ptr = Pixel_LL_Node<value_type>*;
 
     using iterator = BasicIterator<T>;
 
 public:
-    LinkedList()
+    list()
         :
         m_head(nullptr),
         m_tail(nullptr),
         m_size(0)
     {}
 
-    LinkedList(const LinkedList& linkedList) {
+    list(const list_type& linkedList) {
         m_head = calloc(sizeof(node_type));
         memcpy(m_head, linkedList.m_head);
 
@@ -56,7 +53,7 @@ public:
         m_size = linkedList.m_size;
     }
 
-    LinkedList(LinkedList&& linkedList) {
+    list(list_type&& linkedList) {
         m_head = linkedList.m_head;
         m_tail = linkedList.m_tail;
         m_size = linkedList.m_size;
@@ -76,7 +73,7 @@ public:
 // Modifiers
 
     void add_to_tail(value_type item) {
-        node_ptr new_node = calloc(sizeof(node_type));
+        node_ptr new_node = (node_ptr)calloc(sizeof(node_type));
         new_node->m_data = item;
         new_node->m_next = nullptr;
 
@@ -171,6 +168,5 @@ private:
     node_ptr m_tail;
     int m_size;
 };
-
 
 }

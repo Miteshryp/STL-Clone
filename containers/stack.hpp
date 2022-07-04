@@ -1,6 +1,8 @@
 #include"reallocater.hpp"
 #include"iterator.hpp"
 
+#include<iostream>
+
 #define MIN_STACK_CAPACITY 10
 
 namespace pixel {
@@ -12,6 +14,11 @@ class stack {
    using value_type = T;
    using reference_type = T&;
 
+   using stack_type = stack<T>;
+   using stack_reference_type = stack<T>&;
+   using stack_Rreference_type = stack<T>&&;
+   using stack_ptr_type = stack<T>*;
+
    using iterator = BasicIterator<T>;
 
 public:
@@ -20,14 +27,32 @@ public:
       m_size(0),
       m_block(get_memory_block(sizeof(T), MIN_STACK_CAPACITY))
    {
+      std::cout << "NOR" << std::endl;
       m_arr = (ptr_type)m_block.m_arr;
    }
+
+   stack(const stack_reference_type s) 
+      :
+      m_size(s.m_size), 
+      m_block(s.m_block)
+   {
+      std::cout << "REF" << std::endl;
+      m_arr = (ptr_type)(m_block.m_arr);
+   }
+
+   stack(stack_type&& rval)
+   {
+      std::cout << "RVAL" << std::endl;
+      // m_block = PixelMemoryBlock(&&(rval.m_block))
+   }
+
 
    stack(int allocation_capacity)
       :
       m_size(0), 
       m_block(get_memory_block(sizeof(T), allocation_capacity))
    {
+      std::cout << "ALO" << std::endl;
       m_arr = (ptr_type)(m_block.m_arr);
    }
 
@@ -82,6 +107,19 @@ public:
 
    iterator end() {
       return iterator(&m_arr[m_size]);
+   }
+
+public:
+   void operator = (stack_type s) {
+      // Free memory if valid
+      if(m_arr) free_memory_block(m_block);
+
+      // Reset memory and 
+      m_size = s.m_size;
+      m_block = get_memory_block(sizeof(value_type), m_size); // not occup
+      m_arr = (ptr_type)(m_block.m_arr);
+
+      memcpy(m_arr, s.m_block.m_arr, sizeof(value_type)*m_size);
    }
 
    // Iterator - begin, end

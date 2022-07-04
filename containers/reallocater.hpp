@@ -1,6 +1,10 @@
 #include<cstdlib>
 #include<cstring>
 #include<cassert>
+#include<math.h>
+#include<memory.h>
+
+#include<iostream>
 
 namespace pixel {
 
@@ -10,6 +14,12 @@ namespace pixel {
       int m_elem_size;
       int m_capacity;
 
+      PixelMemoryBlock() {
+         m_arr = nullptr;
+         m_elem_size = 0;
+         m_capacity = 0;
+      }
+
       PixelMemoryBlock(void* arr, int elem_size, int capacity) {
          m_arr = arr;
          m_elem_size = elem_size;
@@ -17,8 +27,7 @@ namespace pixel {
       }
 
       // Deep Copy
-      PixelMemoryBlock(PixelMemoryBlock&& block) {
-         free(m_arr);
+      PixelMemoryBlock(const PixelMemoryBlock& block) {
 
          m_capacity = block.m_capacity;
          m_elem_size = block.m_elem_size;
@@ -27,18 +36,40 @@ namespace pixel {
          memcpy(m_arr, block.m_arr, m_elem_size * m_capacity);
       }
 
-      constexpr PixelMemoryBlock& operator = (const PixelMemoryBlock& block) {
-         free(m_arr);
+      PixelMemoryBlock(PixelMemoryBlock&& block) {
+         m_arr = block.m_arr;
+         m_elem_size = block.m_elem_size;
+         m_capacity = block.m_elem_size;
+
+         block.m_arr = nullptr;
+         block.m_elem_size = 0;
+         block.m_capacity = 0;
+      }
+
+      void operator = (PixelMemoryBlock&& block) {
+         // using namespace std;
+         if(m_arr) free(m_arr);
 
          m_arr = block.m_arr;
          m_elem_size = block.m_elem_size;
          m_capacity = block.m_capacity;
 
-         return *this;
+         // Setting the ptr to null to avoid duplicate 
+         // deletions
+         block.m_arr = nullptr;
       }
 
 
    };
+
+
+
+
+
+
+
+
+
 
 
 // Double Capacity Stratergy
@@ -81,13 +112,18 @@ namespace pixel {
 
 
 // Memory Allocater functions
+   void copy_memory_block(PixelMemoryBlock& dest, PixelMemoryBlock& src) {
+      // free_memory_block(src);
+   }
+
    PixelMemoryBlock get_memory_block(int elem_size, int initial_capacity) {
       void* arr = malloc(elem_size*initial_capacity);
       return PixelMemoryBlock(arr, elem_size, initial_capacity);
    }
 
    void free_memory_block(PixelMemoryBlock& block) {
-      void* arr = block.m_arr;
+      void* arr = (void*)block.m_arr;
       free(arr);
+      block.m_arr = nullptr;
    }
 }

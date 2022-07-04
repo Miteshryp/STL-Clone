@@ -4,20 +4,39 @@
 using namespace pixel;
 using namespace std;
 
+stack<int> get_rstack() {
+   stack<int> s(2);
+   s.push(7);
+   return s;
+}
+
 int main() {
-   stack<int> s;
+   stack<int> s1;
 
-   s.push(3);
-   s.push(5);
-   s.push(1);
+   s1.push(3);
+   s1.push(5);
+   s1.push(1);
 
-   cout << "TOP: " << s.top() << endl;
+   stack<int> s2(s1);
+   cout << "TOP S1: " << s1.top() << endl;
+   cout << "TOP S2: " << s2.top() << endl;
 
-   cout << "POP: " << endl;
-   cout << s.pop() << endl;
-   cout << s.pop() << endl;
+   stack<int>s3(get_rstack());
+   cout << s3.size() << endl;
 
-   cout << s.top() << endl;
+   cout << "------------\n";
+
+   cout << "POP S1: " << endl;
+   cout << s1.pop() << endl;
+   cout << s1.pop() << endl;
+
+   cout << "POP S2: " << endl;
+   cout << s2.pop() << endl;
+
+   cout << "------------\n";
+
+   cout << "S1 TOP: " << s1.top() << endl;
+   cout << "S2 TOP: " << s2.top() << endl;
 
    cout << "End of Test\n";
 }
