@@ -4,12 +4,6 @@
 using namespace pixel;
 using namespace std;
 
-stack<int> get_rstack() {
-   stack<int> s(2);
-   s.push(7);
-   return s;
-}
-
 int main() {
    stack<int> s1;
 
@@ -20,9 +14,6 @@ int main() {
    stack<int> s2(s1);
    cout << "TOP S1: " << s1.top() << endl;
    cout << "TOP S2: " << s2.top() << endl;
-
-   stack<int>s3(get_rstack());
-   cout << s3.size() << endl;
 
    cout << "------------\n";
 
