@@ -43,23 +43,31 @@ class doubly_list {
 
 public:
     doubly_list()
+        :
+        m_head(nullptr),
+        m_tail(nullptr),
+        m_size(0)
     {
     }
 
     doubly_list(const list_reference_type list) 
     {
-
+        // @TODO - copy linked list
     }
 
     doubly_list(list_type&& list)
     {
+        m_head = list.m_head;
+        m_tail = list.m_tail;
+        m_size = list.m_size;
+
+        list.m_head = nullptr;
+        list.m_tail = nullptr;
+        list.m_size = 0;
     }
 
 //Getters
 public:
-    int size() const {
-        return m_size;
-    }
 
     const reference_type front() const {
         assert(m_head != nullptr);
@@ -71,12 +79,56 @@ public:
         return m_tail->m_data;
     }
 
+    int size() const {
+        return m_size;
+    }
 
 public:
 
-    void add_to_tail(value_type m_data) {
-        
+    void add_to_tail(const reference_type element) {
+        // @TODO - add element to the tail
     }
+
+    void add_to_head(const reference_type element) {
+        // @TODO - add element to the head
+    }
+
+    value_type remove_from_tail() {
+        // @TODO - remove the tail node and return data
+    }
+
+    value_type remove_from_head() {
+        // @TODO - remove the head node and return data
+    }
+
+    void delete_all_nodes() { 
+        // @TODO - delete all nodes of the list
+    }
+
+
+// Access Methods
+
+    const reference_type get_head_item() const {
+        return m_head->m_data;
+    }
+
+    const reference_type get_tail_item() const {
+        return m_tail->m_data;
+    }
+
+    const get_item_at(int index) const {
+        // @TODO - return item at [index] of dll
+    }
+
+    int find(const reference_type element) const {
+        // @TODO - find element from beginning
+    }
+
+    int find_end(const reference_type element) const {
+        // @TODO - find element from ending
+    }
+
+    
 
 
 
@@ -102,11 +154,12 @@ public:
 // Operators
 public:
     void operator = (const list_reference_type list) {
-        
+        // @TODO - copy the linked list
     }
 
     void operator = (list_type&& list) {
-
+        // @TODO - shallow copy the linked list 
+        //         and revoke pointers from list 
     }
 
 private:

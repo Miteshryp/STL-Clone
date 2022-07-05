@@ -36,14 +36,15 @@ public:
       m_size(s.m_size), 
       m_block(s.m_block)
    {
-      std::cout << "REF" << std::endl;
       m_arr = (ptr_type)(m_block.m_arr);
    }
 
    stack(stack_type&& rval)
+      :
+      m_size(rval.m_size),
+      m_block((PixelMemoryBlock&&)(rval.m_block))
    {
-      std::cout << "RVAL" << std::endl;
-      // m_block = PixelMemoryBlock(&&(rval.m_block))
+      m_arr = (ptr_type)m_block.m_arr;
    }
 
 
@@ -52,7 +53,6 @@ public:
       m_size(0), 
       m_block(get_memory_block(sizeof(T), allocation_capacity))
    {
-      std::cout << "ALO" << std::endl;
       m_arr = (ptr_type)(m_block.m_arr);
    }
 
@@ -67,8 +67,9 @@ public:
 // |    Methods
 // -----------------------
 
-// Essentials
-   void push(const T& element) {
+// Modifiers
+
+   void push(const reference_type element) {
       if(m_size == m_block.m_capacity) {
          // reallocate block
          this->reallocate_capacity();
@@ -77,21 +78,27 @@ public:
       m_arr[m_size++] = element;
    }
 
-   T pop() {
+   void push(value_type&& element) {
+      if(m_size == m_block.m_capacity) {
+         // reallocate block
+         this->reallocate_capacity();
+      }
+
+      m_arr[m_size++] = (value_type&&)element;
+   }
+
+   value_type pop() {
       return m_arr[--m_size];
    }
 
-   T top() const {
-      return m_arr[m_size - 1];
-   }
+
+
+// Informatics
 
    int size() const { return m_size; }
+   int capacity() const { return m_block.m_capacity; }
+   bool empty() const { return m_size == 0; }
 
-// Essential Function
-
-
-
-// Helper Functions
    bool contains(const reference_type item) {
       for(iterator i = this->begin(); i != this->end(); i++) {
          if(*i == item) return true;     
@@ -100,7 +107,19 @@ public:
    }
 
 
+
+// Access Methods
+
+   T top() const {
+      return m_arr[m_size - 1];
+   }
+
+
+
+
+
 // Iterator functions
+
    iterator begin() {
       return iterator(&m_arr[0]);
    }
@@ -111,33 +130,47 @@ public:
 
 public:
    void operator = (stack_type s) {
-      // Free memory if valid
-      if(m_arr) free_memory_block(m_block);
 
-      // Reset memory and 
-      m_size = s.m_size;
-      m_block = get_memory_block(sizeof(value_type), m_size); // not occup
-      m_arr = (ptr_type)(m_block.m_arr);
+      // Allocate a new block if current capacity is inadequate
+      if(m_block.m_capacity < s.m_size) {
+         // Free memory if valid
+         if(m_arr) free_memory_block(m_block);
+
+         // Get new memory block of desired size
+         m_size = s.m_size;
+         m_block = get_memory_block(sizeof(value_type), m_size);
+         m_arr = (ptr_type)(m_block.m_arr);
+      }
+
+      else {
+         m_size = s.m_size;
+      }
 
       memcpy(m_arr, s.m_block.m_arr, sizeof(value_type)*m_size);
    }
 
-   // Iterator - begin, end
+
+
+
+// Data members
+private:
+   int m_size;
+   ptr_type m_arr;
+   PixelMemoryBlock m_block;
+
+
+
 
 private:
    bool reallocate_capacity() {
-      m_block = pixel_push_capacity(m_arr, sizeof(T), m_size, m_block.m_capacity);
-      if(m_block.m_arr == nullptr) return false;
-      m_arr = (T*)(m_block.m_arr);
 
+      // pixel library's default strategy to increase capacity
+      m_block = pixel_push_capacity(m_arr, sizeof(T), m_size, m_block.m_capacity);
+      if(m_block.m_arr == nullptr) return false; // Fail check
+      
+      m_arr = (T*)(m_block.m_arr);
       return true;
    }
-
-private:
-
-   ptr_type m_arr;
-   int m_size;
-   PixelMemoryBlock m_block;
 };
 
 }

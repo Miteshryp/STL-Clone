@@ -26,7 +26,7 @@ public:
         m_capacity(0)
     {}
 
-    vector(const vector& v)
+    vector(const vector_type& v)
     {  
         m_size = v.m_size;
         m_capacity = v.m_capacity;
@@ -36,7 +36,7 @@ public:
         memcpy(m_arr, v.m_arr, m_size * sizeof(value_type));
     }
 
-    vector(vector&& v) 
+    vector(vector_type&& v) 
     {
         m_size = v.m_size;
         m_capacity = v.m_capacity;
@@ -63,20 +63,24 @@ public:
         return m_arr[--m_size];
     }
 
-    bool erase() {
-        // @TODO - remove all the elements from array
+    bool erase(int index, int count) {
+        // @TODO - remove [count] elements starting from [index]
     }
 
-    bool shrikn() {
-        // @TODO - shrink the capacity to fit the e
-        //         current elements only.
+    bool erase(const reference_type value) {
+        //@TODO - remove all instances of [value]
     }
+
 
     int insert(int index, const reference_type element) {
         assert(index < m_size);
         // @TODO - insert element at index
     }
 
+    bool shrink() {
+        // @TODO - shrink the capacity to fit the e
+        //         current elements only.
+    }
 
     // const functions
 
@@ -85,7 +89,6 @@ public:
         // @TODO - returns a subset vector, containing 
         //         elements from [start, start+element_count]   
     }
-
 
 
 
@@ -152,7 +155,7 @@ public:
 
 // Operators
 public:
-    void operator = (const vector& v) {
+    void operator = (const vector_type& v) {
         m_size = v.m_size;
         m_capacity = v.m_capacity;
         
