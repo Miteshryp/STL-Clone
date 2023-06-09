@@ -24,9 +24,9 @@ public:
    stack()
       :
       m_size(0),
-      m_block(get_memory_block(sizeof(T), MIN_STACK_CAPACITY))
+      m_block(PX_MIN_STACK_CAPACITY)
    {
-      m_arr = (ptr_type)m_block.m_arr;
+      // m_arr = (ptr_type)m_block.m_arr;
    }
 
    stack(const stack_reference_type s) 
@@ -34,30 +34,26 @@ public:
       m_size(s.m_size), 
       m_block(s.m_block)
    {
-      m_arr = (ptr_type)(m_block.m_arr);
    }
 
    stack(stack_type&& rval)
       :
       m_size(rval.m_size),
-      m_block((MemoryBlock&&)(rval.m_block))
+      m_block(std::move(rvalue.m_block))
    {
-      m_arr = (ptr_type)m_block.m_arr;
    }
 
 
    stack(int allocation_capacity)
       :
       m_size(0), 
-      m_block(get_memory_block(sizeof(T), allocation_capacity))
+      m_block(allocation_capacity)
    {
-      m_arr = (ptr_type)(m_block.m_arr);
    }
 
    ~stack()
    {
-      free_memory_block(m_block);
-      m_arr = nullptr;
+      m_block->release_memory();
    }
 
 
@@ -70,7 +66,7 @@ public:
    void push(const reference_type element) {
       if(m_size == m_block.m_capacity) {
          // reallocate block
-         this->reallocate_capacity();
+         m_block.increase_capacity();
       }
 
       m_arr[m_size++] = element;
@@ -79,7 +75,6 @@ public:
    void push(value_type&& element) {
       if(m_size == m_block.m_capacity) {
          // reallocate block
-         // this->reallocate_capacity();
          m_block.increase_capacity();
       }
 
