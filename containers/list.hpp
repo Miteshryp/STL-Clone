@@ -12,6 +12,8 @@ class Pixel_LL_Node {
     using node_type = Pixel_LL_Node<T>;
     using node_ptr = Pixel_LL_Node<T>*;
     using node_reference = Pixel_LL_Node<T>&;
+public:
+    Pixel_LL_Node
 
 public:
     // data
@@ -72,6 +74,16 @@ public:
 
 // Modifiers
 
+    /**
+     * @brief Adds the item to the tail of the linked list. 
+     * A new node is created which stores the value passed
+     * into the method as an argument.
+     * 
+     * @param item The value which has to be added to the tail.
+     * @
+     * @note: All items have to be passed with a defined equals 
+     * `=` operator definition
+     */
     void add_to_tail(value_type item) {
         node_ptr new_node = (node_ptr)calloc(sizeof(node_type));
         new_node->m_data = item;
@@ -82,6 +94,12 @@ public:
         m_size++;
     }
 
+
+    /***
+     * @brief Adds an item to the head of the linked list
+     * @param item The item to be added to the head
+     * @returns void return type.
+    */
     void add_to_head(value_type item) {
         node_ptr new_node = calloc(sizeof(node_type));
         new_node->m_data = item;
@@ -91,6 +109,11 @@ public:
         m_size++;
     }
 
+
+    /***
+     * @brief Removes the item at the end of the list
+     * @returns The value of item at the end of the linked list
+    */
     value_type remove_from_tail() {
         assert(m_head != nullptr && m_tail != nullptr);
 
@@ -99,15 +122,23 @@ public:
         
         node_ptr new_tail = m_head;
         
+        // Fetching the second last node
         while(new_tail->next != m_tail) {
             new_tail = new_tail->next;
         }
 
+        // Removing the current tail
         free(m_tail);
+
+        // assigning new tail
         m_tail = new_tail;
         m_size--;
     }
 
+    /****
+     * @brief Removes the item at the head of the linked list.
+     * @returns The value of the item at the head of the linked list
+    */
     value_type remove_from_head() {
         assert(m_head != nullptr && m_tail != nullptr);
 
@@ -123,10 +154,20 @@ public:
 
 // Getters
 
+    /***
+     * @brief Can be used to fetch a constant reference of the item at the end of the linked list.
+     * @returns A reference to the data value in the tail node.
+    */
     const reference_type get_tail_item() const {
         assert(m_tail != nullptr);
         return m_tail != nullptr ? m_tail->data : NULL;
     }
+
+    /**
+     * \brief Get the head item object
+     * 
+     * \return const reference_type 
+     */
     const reference_type get_head_item() const {
         assert(m_head != nullptr);
         return m_head->m_data;
@@ -147,6 +188,25 @@ public:
 
 
 // data operations
+
+/**
+ * @brief Deletes all the nodes allocated in the linked list
+ * @returns void type
+ * 
+ * @warning The method deletes the data assigned to the node.
+ * If the data type does not implement a destructor, the deletion 
+ * of data will happen in an implicit manner (Just removing the
+ * data assigned to the data type).
+ * For User defined types, It is recommended that a destructor is
+ * defined
+ * 
+ * If the linked list contains pointers as data type, then using 
+ * this method without freeing the memory of the pointers will 
+ * cause a memory leak.
+ * 
+ * 
+ * 
+ */
     void delete_all_nodes() {
         node_ptr node = m_head;
         if(node == nullptr) return;
@@ -160,8 +220,10 @@ public:
         m_tail = nullptr;
     }
 
-
-    // @TODO: Write Linked list iterator and implement begin and end functions.
+    /**
+     * @todo Write Linked list iterator and implement begin and end functions.
+     * 
+     */
 
 private:
     node_ptr m_head;

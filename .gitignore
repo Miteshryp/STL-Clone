@@ -1,5 +1,5 @@
 .vscode
 *.txt
 
-./tests/*.out
-./tests/*.exe
+tests/*.out
+tests/*.exe

@@ -1,11 +1,10 @@
-#include"reallocater.hpp"
+#include"memory/memory_block.hpp"
 #include"iterator.hpp"
 
-#include<iostream>
-
-#define MIN_STACK_CAPACITY 10
+#define PX_MIN_STACK_CAPACITY 10
 
 namespace pixel {
+
 
 template<typename T>
 class stack { 
@@ -27,7 +26,6 @@ public:
       m_size(0),
       m_block(get_memory_block(sizeof(T), MIN_STACK_CAPACITY))
    {
-      std::cout << "NOR" << std::endl;
       m_arr = (ptr_type)m_block.m_arr;
    }
 
@@ -42,7 +40,7 @@ public:
    stack(stack_type&& rval)
       :
       m_size(rval.m_size),
-      m_block((PixelMemoryBlock&&)(rval.m_block))
+      m_block((MemoryBlock&&)(rval.m_block))
    {
       m_arr = (ptr_type)m_block.m_arr;
    }
@@ -81,7 +79,8 @@ public:
    void push(value_type&& element) {
       if(m_size == m_block.m_capacity) {
          // reallocate block
-         this->reallocate_capacity();
+         // this->reallocate_capacity();
+         m_block.increase_capacity();
       }
 
       m_arr[m_size++] = (value_type&&)element;
@@ -95,9 +94,17 @@ public:
 
 // Informatics
 
-   int size() const { return m_size; }
-   int capacity() const { return m_block.m_capacity; }
-   bool empty() const { return m_size == 0; }
+   int size() const {
+      return m_size; 
+   }
+   int capacity() const { 
+      // return m_block.m_capacity;
+      return m_block.getCapacity(); 
+   }
+
+   bool empty() const { 
+      return m_size == 0; 
+   }
 
    bool contains(const reference_type item) {
       for(iterator i = this->begin(); i != this->end(); i++) {
@@ -111,7 +118,8 @@ public:
 // Access Methods
 
    T top() const {
-      return m_arr[m_size - 1];
+      // return m_arr[m_size - 1];
+      return m_block->getData[m_size - 1];
    }
 
 
@@ -121,32 +129,37 @@ public:
 // Iterator functions
 
    iterator begin() {
-      return iterator(&m_arr[0]);
+      // return iterator(&m_arr[0]);
+      return iterator(m_block->getData());
    }
 
    iterator end() {
-      return iterator(&m_arr[m_size]);
+      // return iterator(&m_arr[m_size]);
+      return iterator(m_block->getData() + m_size);
    }
 
 public:
    void operator = (stack_type s) {
+      m_block = s.m_block;
+      // m_arr = m_block.getData();
+      m_size = s.m_size;
 
-      // Allocate a new block if current capacity is inadequate
-      if(m_block.m_capacity < s.m_size) {
-         // Free memory if valid
-         if(m_arr) free_memory_block(m_block);
+      // // Allocate a new block if current capacity is inadequate
+      // if(m_block.m_capacity < s.m_size) {
+      //    // Free memory if valid
+      //    if(m_arr) free_memory_block(m_block);
 
-         // Get new memory block of desired size
-         m_size = s.m_size;
-         m_block = get_memory_block(sizeof(value_type), m_size);
-         m_arr = (ptr_type)(m_block.m_arr);
-      }
+      //    // Get new memory block of desired size
+      //    m_size = s.m_size;
+      //    m_block = get_memory_block(sizeof(value_type), m_size);
+      //    m_arr = (ptr_type)(m_block.m_arr);
+      // }
 
-      else {
-         m_size = s.m_size;
-      }
+      // else {
+      //    m_size = s.m_size;
+      // }
 
-      memcpy(m_arr, s.m_block.m_arr, sizeof(value_type)*m_size);
+      // memcpy(m_arr, s.m_block.m_arr, sizeof(value_type)*m_size);
    }
 
 
@@ -155,22 +168,9 @@ public:
 // Data members
 private:
    int m_size;
-   ptr_type m_arr;
-   PixelMemoryBlock m_block;
+   // ptr_type m_arr;
+   MemoryBlock<T> m_block;
 
-
-
-
-private:
-   bool reallocate_capacity() {
-
-      // pixel library's default strategy to increase capacity
-      m_block = pixel_push_capacity(m_arr, sizeof(T), m_size, m_block.m_capacity);
-      if(m_block.m_arr == nullptr) return false; // Fail check
-      
-      m_arr = (T*)(m_block.m_arr);
-      return true;
-   }
 };
 
 }

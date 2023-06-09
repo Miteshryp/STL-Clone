@@ -1,8 +1,9 @@
 #include<iostream>
 #include<string>
 #include<memory.h>
-
 #include<assert.h>
+
+#include "utils/types.hpp"
 
 #define PX_VEC_CAPACITY_EXT(c) (c*2)
 
@@ -63,7 +64,7 @@ public:
         return m_arr[--m_size];
     }
 
-    bool erase(int index, int count) {
+    bool erase(uint32 index, uint32 count) {
         // @TODO - remove [count] elements starting from [index]
     }
 

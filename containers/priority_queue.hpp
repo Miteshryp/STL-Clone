@@ -1,3 +1,16 @@
-namespace pixel {
-   
+namespace pixel
+{
+
+    template <typename T>
+    class priority_queue
+    {
+        public:
+            priority_queue();
+            priority_queue(priority_queue& q);
+            priority_queue(priority_queue&& q);
+
+            ~priority_queue();
+        private:
+    };
+
 }

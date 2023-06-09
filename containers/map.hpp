@@ -1,3 +1,5 @@
 namespace pixel {
-   
+  class map {
+    
+  };
 }
