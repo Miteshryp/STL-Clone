@@ -1,25 +1,11 @@
+#pragma once
+
 #include<assert.h>
-#include"iterator.hpp"
+
+#include "containers/utils/iterator.hpp"
+#include "containers/utils/list_nodes.hpp"
 
 namespace pixel {
-
-template<typename T>
-class Pixel_LL_Node {
-    using value_type = T;
-    using reference_type = T&;
-    using ptr_type = T*;
-
-    using node_type = Pixel_LL_Node<T>;
-    using node_ptr = Pixel_LL_Node<T>*;
-    using node_reference = Pixel_LL_Node<T>&;
-public:
-    Pixel_LL_Node
-
-public:
-    // data
-    value_type m_data;
-    struct node_ptr m_next;
-};
 
 
 template<typename T>
@@ -211,10 +197,16 @@ public:
         node_ptr node = m_head;
         if(node == nullptr) return;
 
-        while(node != m_tail) {
-            free(node);
+        while(node != nullptr) {
+            node_ptr temp = node->m_next;
+            
+            if(node != nullptr) 
+                free(node);
+            
+            node = temp;
         }
-        free(node); // freeing up tail
+
+        // free(node); // freeing up tail
 
         m_head = nullptr;
         m_tail = nullptr;

@@ -1,10 +1,16 @@
-#include"memory/memory_block.hpp"
-#include"iterator.hpp"
+#include"containers/memory/memory_block.hpp"
+#include"containers/utils/iterator.hpp"
 
 #define PX_MIN_STACK_CAPACITY 10
 
 namespace pixel {
 
+
+struct __px_stack_settings {
+   static int min_capacity;
+};
+
+int __px_stack_settings::min_capacity = 10;
 
 template<typename T>
 class stack { 
@@ -39,7 +45,7 @@ public:
    stack(stack_type&& rval)
       :
       m_size(rval.m_size),
-      m_block(std::move(rvalue.m_block))
+      m_block(std::move(rval.m_block))
    {
    }
 
@@ -53,7 +59,9 @@ public:
 
    ~stack()
    {
-      m_block->release_memory();
+      // Deep clean
+      for(ptr_type element = m_block.getData(); element != m_block.getData() + m_size; element++)
+         element->~value_type();
    }
 
 
@@ -69,7 +77,8 @@ public:
          m_block.increase_capacity();
       }
 
-      m_arr[m_size++] = element;
+      // m_arr[m_size++] = element;
+      m_block.getData()[m_size++] = element;
    }
 
    void push(value_type&& element) {
@@ -78,11 +87,12 @@ public:
          m_block.increase_capacity();
       }
 
-      m_arr[m_size++] = (value_type&&)element;
+      // m_arr[m_size++] = (value_type&&)element;
+      m_block.getData()[m_size++] = (value_type&&)element;
    }
 
    value_type pop() {
-      return m_arr[--m_size];
+      return m_block.getData()[--m_size];
    }
 
 
@@ -112,9 +122,9 @@ public:
 
 // Access Methods
 
-   T top() const {
+   const T top() const {
       // return m_arr[m_size - 1];
-      return m_block->getData[m_size - 1];
+      return static_cast<const T>(m_block.getData()[m_size - 1]);
    }
 
 
@@ -125,12 +135,12 @@ public:
 
    iterator begin() {
       // return iterator(&m_arr[0]);
-      return iterator(m_block->getData());
+      return iterator(m_block.getData());
    }
 
    iterator end() {
       // return iterator(&m_arr[m_size]);
-      return iterator(m_block->getData() + m_size);
+      return iterator(m_block.getData() + m_size);
    }
 
 public:
@@ -164,7 +174,7 @@ public:
 private:
    int m_size;
    // ptr_type m_arr;
-   MemoryBlock<T> m_block;
+   memory_block<T> m_block;
 
 };
 

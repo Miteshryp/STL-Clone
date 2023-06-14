@@ -1,3 +1,8 @@
+#pragma once
+
+#include "containers/utils/list_nodes.hpp"
+
+
 namespace pixel {
 
 
@@ -109,6 +114,8 @@ class LLNodeIterator  {
    using value_type = T;
    using ptr_type = T*;
    using reference_type = T&;
+
+   using node_type = pixel::Pixel_LL_Node<T>;
 
 public:
 

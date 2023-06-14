@@ -1,28 +1,13 @@
+#pragma once
+
 #include<cstdlib>
 #include<assert.h>
 #include<memory.h>
 
+#include "containers/utils/list_nodes.hpp"
+#include "containers/utils/iterator.hpp"
 
 namespace pixel {
-
-template<typename T>
-class Pixel_DLL_Node {
-    using value_type = T;
-    using reference_type = T&;
-    using ptr_type = T*;
-
-    using node_type = Pixel_DLL_Node<T>;
-    using node_ptr = Pixel_DLL_Node<T>*;
-    using node_reference = Pixel_DLL_Node<T>&;
-
-// data
-public:
-    value_type m_data;
-    struct node_ptr prev;
-    struct node_ptr next;
-};
-
-
 
 
 template<typename T>

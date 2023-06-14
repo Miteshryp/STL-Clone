@@ -1,13 +1,17 @@
+#pragma once
+
 #include<cstdlib>
 #include<cassert>
 #include<memory.h>
 
-#include "utils/types.hpp"
+#include "containers/utils/types.hpp"
 
 #define PX_MEMBLOCK_DOUBLE_LIMIT 100
 #define PX_MEMBLOCK_HALF_LIMIT 400
 
 namespace pixel {
+
+   using namespace pixel::types;
 
    /**
     * @note
@@ -18,7 +22,7 @@ namespace pixel {
     * It is hence the responsibility of the wrapper class to properly run the constructor and 
     * deallocate the resources before freeing the memory block.
     * Hence, running the destructor on unused capacity can cause issues.
-    * The MemoryBlock structure is only a representative of memory block allocated on the heap
+    * The memory_block structure is only a representative of memory block allocated on the heap
    */
 
 
@@ -37,14 +41,14 @@ namespace pixel {
     * @todo Proper Testing
     */
    template<typename T>
-   class MemoryBlock {
+   class memory_block {
       typedef void* data_handle;
       typedef T value_type;
-      typedef T* pointer_type;
+      typedef T* ptr_type;
 
    public:
 
-      MemoryBlock() = delete;
+      // memory_block() = delete;
 
 
       /**
@@ -53,10 +57,19 @@ namespace pixel {
        * 
        * @param capacity Capacity of the memory block (Count of element of type T)
        */
-      MemoryBlock(uint32 capacity = s_default_block_capacity) 
+      memory_block(uint32 capacity = s_default_block_capacity) 
       {
-         m_arr = (data_handle)malloc(capacity * sizeof(T));
+         m_arr = (data_handle)malloc(capacity * sizeof(value_type));
          m_allocated = capacity * sizeof(T);
+      }
+
+      
+      memory_block(ptr_type* data, uint32 element_count)
+      {
+         m_arr = (data_handle)malloc(element_count * sizeof(value_type));
+         m_allocated = element_count * sizeof(value_type);
+
+         memmove(m_arr, data, m_allocated);
       }
 
 
@@ -64,27 +77,28 @@ namespace pixel {
        * @brief Copy Contructor
        * @param block 
        */
-      MemoryBlock(const MemoryBlock<T>& block) 
+      memory_block(const memory_block<T>& block) 
       {
-         // Deep Copy
+         // Shallow Copy
          m_allocated = block.m_allocated;
          m_arr = malloc(m_allocated);
+         memcpy(m_arr, block.m_arr, m_allocated);
 
-         // Deep copy
-         pointer_type arr_type = static_cast<pointer_type>(m_arr);
-         pointer_type block_arr_type = block.m_arr;
+         // // Deep copy
+         // ptr_type arr_type = static_cast<ptr_type>(m_arr);
+         // ptr_type block_arr_type = static_cast<ptr_type>(block.m_arr);
 
-         uint32 capacity = block.getCapacity();
-         for(int i = 0; i < capacity; i++) {
-            arr_type[i] = block_arr_type[i]; // deep copy
-         }
+         // uint32 capacity = block.getCapacity();
+         // for(int i = 0; i < capacity; i++) {
+         //    arr_type[i] = block_arr_type[i]; // deep copy
+         // }
       }
 
       /**
        * @brief Move Constructor
        * @param block Rvalue memory block
        */
-      MemoryBlock(MemoryBlock<T>&& block) 
+      memory_block(memory_block<T>&& block) 
       {
          m_arr = block.m_arr;
          m_allocated = block.m_allocated;
@@ -99,10 +113,11 @@ namespace pixel {
        * Performs a shallow delete on the memory block, 
        * i.e. Only frees the memory.
        */
-      ~MemoryBlock()
+      ~memory_block()
       {
          // Shallow delete
-         free(m_arr);
+         if(m_arr != nullptr)
+            free(m_arr);
       }
 
       /**
@@ -128,8 +143,12 @@ namespace pixel {
        * @brief Get the data handle to the allocated data 
        * @return A data_handle (of void* type) to the allocated data.
        */
-      pointer_type getData() {
-         return static_cast<pointer_type>(m_arr);
+      ptr_type getData() {
+         return static_cast<ptr_type>(m_arr);
+      }
+
+      ptr_type getDataEnd() {
+         return static_cast<ptr_type>( (ptr_type)(((char*)m_arr) + m_allocated) );
       }
 
 
@@ -137,8 +156,8 @@ namespace pixel {
        * @brief Get a const data_handle to the allocated dat
        * @return A const data_handle (of void* type) to the allocated data.
        */
-      const pointer_type getData() const {
-         return static_cast<const pointer_type>(m_arr);
+      const ptr_type getData() const {
+         return static_cast<const ptr_type>(m_arr);
       }
 
 
@@ -151,11 +170,10 @@ namespace pixel {
        * @brief Equal assignment used to TAKEOVER the resources of an rvalue instance.
        * The assignment revokes access of the allocated resources from the block argument 
        * and give the resources to the host instance.
-       * @param block An Rvalue instance of MemoryBlock.
+       * @param block An Rvalue instance of memory_block.
        */
-      void operator = (MemoryBlock<T>&& block) {
-         // using namespace std;
-         if(m_arr) 
+      void operator = (memory_block<T>&& block) {
+         if(m_arr != nullptr) 
             free(m_arr);
 
          // Standard move semantics
@@ -172,24 +190,27 @@ namespace pixel {
        * The assignment performs a deep copy of the resources in the block.
        * @param block 
        */
-      void operator = (const MemoryBlock<T>& block) {
-         if(m_arr) 
+      void operator = (const memory_block<T>& block) {
+         if(m_arr != nullptr) 
             free(m_arr);
 
-         m_allocated = block.allocated;
+         m_allocated = block.m_allocated;
          m_arr = malloc(m_allocated);
+
+         // Shallow copy
+         memcpy(m_arr, block.m_arr, m_allocated);
 
          // Standard copying semantics
          // memcpy(m_arr, block.m_arr, m_allocated);
 
          // Deep copy
-         pointer_type arr_type = static_cast<pointer_type>(m_arr);
-         pointer_type block_arr_type = block.m_arr;
+         // ptr_type arr_type = static_cast<ptr_type>(m_arr);
+         // ptr_type block_arr_type = block.m_arr;
 
-         uint32 capacity = block.getCapacity();
-         for(int i = 0; i < capacity; i++) {
-            arr_type[i] = block_arr_type[i]; // deep copy
-         }
+         // uint32 capacity = block.getCapacity();
+         // for(int i = 0; i < capacity; i++) {
+         //    arr_type[i] = block_arr_type[i]; // deep copy
+         // }
       }
 
       /**
@@ -202,14 +223,17 @@ namespace pixel {
          if(!m_arr) 
             return false;
 
-         free(m_arr);
+         if(m_arr != nullptr)
+            free(m_arr);
+
+         m_arr = nullptr;
          m_allocated = 0;
 
          return true;
       }
 
 
-      bool increase_capacity() {
+      void increase_capacity() {
          uint32 capacity = this->getCapacity();
 
          if(capacity <= PX_MEMBLOCK_DOUBLE_LIMIT)
@@ -220,7 +244,7 @@ namespace pixel {
             this->increase_capacity_quarter();
       }
 
-      bool increase_capacity(const float32& factor) {
+      void increase_capacity(const float32& factor) {
          this->increase_capacity_by_factor(factor);
       }
 
@@ -254,7 +278,7 @@ private:
 
          if(new_capacity == prev_capacity) {
             // Allocate a default memory block, since the last allocation size was 0
-            m_arr = malloc(sizeof(T) * pixel::MemoryBlock<T>::s_default_block_capacity);
+            m_arr = malloc(sizeof(T) * pixel::memory_block<T>::s_default_block_capacity);
             m_allocated = sizeof(T) * s_default_block_capacity;
             return;
          }
@@ -266,7 +290,8 @@ private:
          memcpy(m_arr, temp, m_allocated / 2);
 
          // Releasing old memory
-         free(temp);
+         if(temp != nullptr)
+            free(temp);
       }
 
 
@@ -290,7 +315,8 @@ private:
          m_allocated = sizeof(T) * new_capacity;
 
          // Releasing old memory
-         free(temp);
+         if(temp != nullptr)
+            free(temp); 
       }
 
 
