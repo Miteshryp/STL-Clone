@@ -31,31 +31,26 @@ public:
       :
       m_size(0),
       m_block(PX_MIN_STACK_CAPACITY)
-   {
-      // m_arr = (ptr_type)m_block.m_arr;
-   }
+   {}
 
    stack(const stack_reference_type s) 
       :
       m_size(s.m_size), 
       m_block(s.m_block)
-   {
-   }
+   {}
 
    stack(stack_type&& rval)
       :
       m_size(rval.m_size),
       m_block(std::move(rval.m_block))
-   {
-   }
+   {}
 
 
    stack(int allocation_capacity)
       :
       m_size(0), 
       m_block(allocation_capacity)
-   {
-   }
+   {}
 
    ~stack()
    {
@@ -71,26 +66,32 @@ public:
 
 // Modifiers
 
+   /**
+    * @brief Pushes the element to the top of the stack
+    * @param element 
+    */
    void push(const reference_type element) {
       if(m_size == m_block.m_capacity) {
          // reallocate block
          m_block.increase_capacity();
       }
 
-      // m_arr[m_size++] = element;
       m_block.getData()[m_size++] = element;
    }
-
    void push(value_type&& element) {
+
       if(m_size == m_block.m_capacity) {
-         // reallocate block
-         m_block.increase_capacity();
+         m_block.increase_capacity(); // reallocate block
       }
 
-      // m_arr[m_size++] = (value_type&&)element;
       m_block.getData()[m_size++] = (value_type&&)element;
    }
 
+
+   /**
+    * @brief Used to remove the top-most element in the stack.
+    * @return value_type 
+    */
    value_type pop() {
       return m_block.getData()[--m_size];
    }
@@ -99,18 +100,45 @@ public:
 
 // Informatics
 
+   /**
+    * @brief Returns the current size of the stack
+    * 
+    * @return Size of the stack
+    */
    int size() const {
       return m_size; 
    }
+
+
+   /**
+    * @brief Returns the current capacity of the stack.
+    * The capacity of the stack will be the sum of current
+    * elements and excess space in the stack
+    * 
+    * @return Number of elements which can be stored in the stack
+    */
    int capacity() const { 
-      // return m_block.m_capacity;
       return m_block.getCapacity(); 
    }
 
+
+   /**
+    * @brief Used to check if the stack is empty (no elements in the stack)
+    * 
+    * @return true if the stack is empty,
+    * @return false otherwise
+    */
    bool empty() const { 
       return m_size == 0; 
    }
 
+   /**
+    * @brief Used to check if an element exists in the stack
+    * @param item element to be searched in the stack
+    * 
+    * @return true if the element exists, 
+    * @return false otherwise
+    */
    bool contains(const reference_type item) {
       for(iterator i = this->begin(); i != this->end(); i++) {
          if(*i == item) return true;     
@@ -122,9 +150,14 @@ public:
 
 // Access Methods
 
-   const T top() const {
-      // return m_arr[m_size - 1];
-      return static_cast<const T>(m_block.getData()[m_size - 1]);
+   /**
+    * @brief Returns a const reference to the top-most element 
+    * in the stack
+    * 
+    * @returns constant reference to the top element 
+    */
+   const reference_type top() const {
+      return static_cast<const reference_type>(m_block.getData()[m_size - 1]);
    }
 
 
@@ -134,37 +167,17 @@ public:
 // Iterator functions
 
    iterator begin() {
-      // return iterator(&m_arr[0]);
       return iterator(m_block.getData());
    }
 
    iterator end() {
-      // return iterator(&m_arr[m_size]);
       return iterator(m_block.getData() + m_size);
    }
 
 public:
    void operator = (stack_type s) {
       m_block = s.m_block;
-      // m_arr = m_block.getData();
       m_size = s.m_size;
-
-      // // Allocate a new block if current capacity is inadequate
-      // if(m_block.m_capacity < s.m_size) {
-      //    // Free memory if valid
-      //    if(m_arr) free_memory_block(m_block);
-
-      //    // Get new memory block of desired size
-      //    m_size = s.m_size;
-      //    m_block = get_memory_block(sizeof(value_type), m_size);
-      //    m_arr = (ptr_type)(m_block.m_arr);
-      // }
-
-      // else {
-      //    m_size = s.m_size;
-      // }
-
-      // memcpy(m_arr, s.m_block.m_arr, sizeof(value_type)*m_size);
    }
 
 

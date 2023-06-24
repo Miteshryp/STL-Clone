@@ -81,15 +81,6 @@ public:
       m_data = iterator.m_data;
    }
 
-
-   // friend bool operator != (const iterator& i1, const iterator& i2) {
-   //    return i1.m_ptr != i2.m_ptr;
-   // }
-   
-   // friend bool operator == (const iterator& i1, const iterator& i2) {
-   //    return i1.m_ptr == i2.m_ptr;
-   // }
-
    bool operator == (const iterator& iter) const {
       return m_data == iter.m_data;
    }
@@ -101,6 +92,10 @@ public:
 protected:
    ptr_type m_data;
 };
+
+
+
+
 
 
 
@@ -162,11 +157,10 @@ public:
       return iterator(temp);
    }
 
-   void operator --() = delete;
+   void operator -- () = delete;
 
 
 private: 
-   // value_type m_data;
    node_ptr m_node;
 };
 
@@ -199,6 +193,14 @@ public:
    ~DLLNodeIterator()
    {}
 
+   void operator = (const iterator& iter) {
+      m_node = iter.m_node;
+   }
+
+   void operator = (iterator&& iter) {
+      m_node = iter.m_node;
+      iter.m_node = nullptr;
+   }
 
    bool operator == (const iterator& iter) const {
       return m_node == iter.m_node;
@@ -208,14 +210,31 @@ public:
    }
 
    reference_type operator * () {
-      return *(m_node->m_data);
+      return *(m_node->getDataPointer());
    }
 
-   void operator ++ (){
-      m_node = m_node->next();
+
+
+
+   iterator operator ++ (){
+      m_node = (node_ptr)(m_node->getNextPtr());
    }
-   void operator -- (){
-      m_node = m_node->prev();
+
+   iterator operator ++ (int) {
+      iterator iter(m_node);
+      m_node = (node_ptr)(m_node->getNextPtr());
+      return iter;
+   }
+
+   iterator operator -- (){
+      m_node = (node_ptr)(m_node->getPrevPtr());
+      return *this;
+   }
+
+   iterator operator -- (int) {
+      iterator iter(*this);
+      m_node = (node_ptr)(m_node->getNextPtr());
+      return iter;
    }
 
 private:

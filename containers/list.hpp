@@ -436,7 +436,13 @@ public:
 
 
     void operator = (value_type&& list) {
+        m_head = list.m_head;
+        m_tail = list.m_tail;
+        m_size = list.m_size;
 
+        list.m_head = nullptr;
+        list.m_tail = nullptr;
+        list.m_size = 0;
     }
 
 private:

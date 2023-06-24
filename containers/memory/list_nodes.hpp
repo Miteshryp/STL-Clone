@@ -50,11 +50,31 @@ public:
     }
 
 
+    void* getPrevPtr() const {
+        return (void*)m_prev;
+    }
+
+    void setPrevPtr(void* prev)  {
+        m_prev = prev;
+    }
+
+
+    ptr_type getDataPointer() const {
+        return (ptr_type)m_data;
+    }
+
+
 // data
 public:
     node_ptr m_prev;
     node_ptr m_next;
 };
+
+
+
+
+
+
 
 template<typename T>
 class Pixel_LL_Node : public __Pixel_Node {
