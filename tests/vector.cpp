@@ -70,6 +70,9 @@ Test(vectorTestSuite, pushnpopTest) {
 }
 
 
+
+
+
 Test(vectorTestSuite, sizeCapacityTest) {
     cr_expect(pointer_structure_vector->capacity() > pointer_structure_vector->size(), "Test failed to run as the pre-condition was not satisfied");
 
@@ -84,9 +87,25 @@ Test(vectorTestSuite, sizeCapacityTest) {
     cr_assert(pointer_structure_vector->size() == pointer_structure_vector->capacity(), "Shrink Failed");
     cr_assert(copy_vector->size() < copy_vector->capacity(), "Copy_vector corrupted");
 
+    // Comparing value to check data integrity
     for(uint32 i = 0; i < copy_vector->size(); i++) {
         cr_assert((*copy_vector)[i].getA() == (*pointer_structure_vector)[i].getA(), "Value of %d is not the same", i);
     }
 
     info << "Shrink test successful" << std::endl;
+}
+
+
+
+
+Test(vectorTestSuite, initialiserList) {
+    // pixel::vector<int> v;
+    pixel::vector<TestStructure> v = {TestStructure(1,2), TestStructure(2,3)};
+    warn << "Creation Successful\n" << std::flush;
+    v.pop();
+
+    for(int i = 0; i < v.size(); i++)
+        info << v[i].getA() << " ";
+    
+    info << std::endl;
 }

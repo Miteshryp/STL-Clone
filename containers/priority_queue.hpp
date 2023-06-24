@@ -1,6 +1,8 @@
 namespace pixel
 {
 
+
+    // Heap data structure
     template <typename T>
     class priority_queue
     {
