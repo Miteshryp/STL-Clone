@@ -1,12 +1,14 @@
 #pragma once
 
 #include<assert.h>
+#include<algorithm>
 
 #include "containers/utils/types.hpp"
 #include "containers/utils/iterator.hpp"
 #include "containers/memory/memory_block.hpp"
 
 #define PX_VEC_CAPACITY_EXT(c) (c*2)
+
 
 namespace pixel {
     using namespace pixel::types;
@@ -30,7 +32,23 @@ public:
         :
         m_block(),
         m_size(0)
-    {}
+    {
+    }
+
+    vector(std::initializer_list<value_type> init_list)
+        :
+        m_block(init_list.size()),
+        m_size(init_list.size())
+    {
+        memmove(m_block.getData(), init_list.begin(), m_block.getTotalAllocation());
+    }
+
+    constexpr vector(ptr_type start, size_t size)
+        :
+        m_block(size),
+        m_size(size)
+    {
+    }
 
     vector(const vector_type& v)
         :
@@ -61,7 +79,10 @@ public:
 // Access methods
 public:
 
-    // modifiers
+/**
+ * Modifiers
+ * 
+ */
 
     /**
      * @brief Inserts a contructed instance of element into the memory block
@@ -87,8 +108,15 @@ public:
 
 
 
-    value_type pop() {
-        return m_block.getData()[--m_size];
+    /**
+     * @todo test => complete the pop function to deal with the return value 
+     * if it is not to be accepted outside the method call
+     * 
+     * @return value_type 
+     */
+    void pop() {
+        // return static_cast<value_type&&>(m_block.getData()[--m_size]);
+        m_size--;
     }
 
     /**
@@ -108,7 +136,7 @@ public:
          *   Therefore, we'll have to shift the elements backwords
          * - Cost(Shifting) < Cost(Rebuilding the array) 
          */
-        assert(index < m_size);
+        assert(index < m_size && index + count);
 
         // cleaning up the object stored.
         m_block.getData()[index]->~value_type();
@@ -140,30 +168,55 @@ public:
         return true;
     }
 
+    /**
+     * @brief Erases the element pointed at by the iterator from the array
+     * 
+     * @param it 
+     * @return true 
+     * @return false 
+     */
     bool erase(const iterator& it) {
-        /**
-         * @todo delete the element pointed to by the iterator
-         * 
-         * - Will shift all the elements after the iterator
-         *   to the left by one index.
-         */
+        assert(it->m_ptr >= m_block.getData() && it->m_ptr < m_block.getData() + m_size);
 
+        (*it).~value_type();
+        
+
+        /** @todo: check if this move is correct
+        */
+        memmove(it->m_ptr, it->m_ptr+1, ( (m_block.getData() + m_size) - it->m_ptr ) * sizeof(value_type));
         return true;
     }
 
     /**
      * @brief Inserts an element of the used type at the specified index.
      * 
-     * @todo Decide if this would be efficient using shift or recreation of array
-     * 
      * @param index 
      * @param element 
      * @return true if the insertion was successful,
      * @return false otherwise.
+     * 
+     * 
+     * @todo Optimization possible - Instead of increasing capacity on the available block,
+     * which creates a new block and copies the entire array to the new block, we can create
+     * the new block manually and copy uptil the correct position, insert the element and 
+     * copy over the remaining elements.
+     * This reduces the number of copies. In the current method, the entire array is copied 
+     * over once, and then the memory to the right of the index is again shifted one index 
+     * to the right.
      */
-    bool insert(int index, const reference_type element) {
+    bool insert(uint32 index, const reference_type element) {
         assert(index < m_size);
-        // @TODO - insert element at index
+
+        // ensuring that space is available to shift the array to the right
+        if(m_size >= m_block.getCapacity()) {
+            m_block.increase_capacity();
+        } 
+
+        // shift the memory by one
+        memmove(m_block.getData() + index, m_block.getData(), (m_size - index) * sizeof(value_type));
+        m_block.getData()[index] = element;
+
+        return true;
     }
 
     /**
@@ -186,14 +239,24 @@ public:
         return true;
     }
 
-    // const functions
+
+/**
+ * Constant functions
+ */
 
 
-    vector_type slice(int start, int element_count) const {
-        // @TODO - returns a subset vector, containing 
-        //         elements from [start, start+element_count]
+    /**
+     * @brief Returns a vector containing the sliced portion of the vector
+     * 
+     * @param start starting index of the sliced vector
+     * @param element_count number of elements from the starting index
+     * @return A vector of copied sliced element
+     */
+    vector_type slice(uint32 start, uint32 element_count) const {
+        // ensures proper slice queries
         assert(start + element_count <= m_size);
 
+        // creating a new block, which copies the queried elements.
         memory_block_type ret_block(m_block.getData() + start, element_count);
         return vector_type(ret_block, element_count);
     }
@@ -203,40 +266,78 @@ public:
      * @brief Returns the currently occupied storage capacity 
      * of the vector's memory block
      * 
-     * @return int - The total count of elements which can be stored in the vector
+     * @return The total count of elements which can be stored in the vector
      */
     uint32 capacity() const {
         return m_block.getCapacity();
     }
 
     /**
-     * @brief 
+     * @brief Returns the remaining number of elements which can be
+     * inserted before a resize is required.
      * 
-     * @return int 
+     * @return The remaining capacity of the vector
      */
     uint32 remaining_capacity() const {
         // return m_capacity - m_size;
         return m_block.getCapacity() - m_size;
     }
 
+
+    /**
+     * @brief The current occupied size of the vector
+     * 
+     * @return size of vector
+     */
     uint32 size() const {
         return m_size;
     }
 
-    const reference_type at(int index) const {
+    /**
+     * @brief Used to get a const reference to an element at a specified index.
+     * 
+     * @param index The index of element to get a reference
+     * @return const reference of the element
+     */
+    const reference_type at(uint32 index) const {
         return m_block.getData()[index];
     }
 
+
+    /**
+     * @brief Returns a const reference to the
+     * first element of the array
+     * 
+     * @return const reference to the first element
+     */
     const reference_type front() const {
         return m_block.getData()[0];
     }
 
+
+    /**
+     * @brief Returns a const reference to the
+     * last element of the array
+     * 
+     * @return reference to the last element 
+     */
     const reference_type back() const {
         return m_block.getData()[m_size - 1];
     }
 
-    bool contains (const reference_type element) const  {
-        // @TODO
+    /**
+     * @brief Used to check whether a certain element
+     * is present in the vector
+     * 
+     * @param element The element to check in the array
+     * @return true if the element is present,
+     * false otherwise
+     */
+    bool contains(const reference_type element) const  {
+        for(uint32 i = 0; i < m_size; i++)
+            if(m_block.getData()[i] == element) return true;
+        
+        // not found
         return false;
     }
 
@@ -256,11 +357,14 @@ public:
      * @brief Finds the first occurance of an element in the vector
      * 
      * @param element 
-     * @return int - The index of first occurance of element.
+     * @return The index of first occurance of element.
      * 
      * @todo implement
      */
-    int find(const reference_type element) const {
+    int32 find(const reference_type element) const {
+        for(uint32 i = 0; i < m_size; i++) {
+            if(m_block.getData()[i] == element) return i;
+        }
         return -1;
     }
 
@@ -276,11 +380,11 @@ public:
 
 
     iterator begin() const {
-
+        return iterator(m_block.getData());
     }
 
     iterator end() const {
-
+        return iterator(m_block.getData() + m_size);
     }
 
 
@@ -301,7 +405,7 @@ public:
      * 
      * @param new_capacity new required required
      */
-    void realloc_capacity(int new_capacity) {
+    void realloc_capacity(uint32 new_capacity) {
         assert(new_capacity >= m_size); // cannot shrink to delete elements
 
         memory_block_type new_block(new_capacity);
@@ -345,7 +449,7 @@ public:
      * @param index 
      * @return reference_type 
      */
-    reference_type operator [](int index) {
+    reference_type operator [](uint32 index) {
         // return m_arr[index];
         assert(index < m_size);
         return m_block.getData()[index];
