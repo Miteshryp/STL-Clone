@@ -7,8 +7,6 @@
 #include "containers/utils/iterator.hpp"
 #include "containers/memory/memory_block.hpp"
 
-#define PX_VEC_CAPACITY_EXT(c) (c*2)
-
 
 namespace pixel {
     using namespace pixel::types;
@@ -18,6 +16,7 @@ class vector {
     using value_type = T;
     using ptr_type = T*;
     using reference_type = T&;
+    using const_reference_type = T const&;
 
     using vector_type = vector<T>;
     using vector_reference_type = vector<T>&;
@@ -91,13 +90,12 @@ public:
      * 
      * @param element The instance of the element to be inserted
      */
-    void push(const reference_type element) {
+    void push(const_reference_type element) {
         if(m_size >= m_block.getCapacity())
             m_block.increase_capacity();
         
         m_block.getData()[m_size++] = element;
     }
-
     void push(value_type&& element) {
         if(m_size >= m_block.getCapacity())
             m_block.increase_capacity();
@@ -116,7 +114,9 @@ public:
      */
     void pop() {
         // return static_cast<value_type&&>(m_block.getData()[--m_size]);
-        m_size--;
+
+        // running the element destructor
+        m_block.getData()[--m_size]->~value_type();
     }
 
     /**
@@ -158,7 +158,7 @@ public:
      * @return true 
      * @return false 
      */
-    bool erase(const reference_type value) {
+    bool erase(const_reference_type value) {
         for(uint32 i = 0; i < m_size; i++) {
             if(m_block.getData()[i] == value)
                 this->erase(i, 1);
@@ -171,7 +171,7 @@ public:
     /**
      * @brief Erases the element pointed at by the iterator from the array
      * 
-     * @param it 
+     * @param it Iterator pointing to the element to remove
      * @return true 
      * @return false 
      */
@@ -204,7 +204,7 @@ public:
      * over once, and then the memory to the right of the index is again shifted one index 
      * to the right.
      */
-    bool insert(uint32 index, const reference_type element) {
+    bool insert(uint32 index, const_reference_type element) {
         assert(index < m_size);
 
         // ensuring that space is available to shift the array to the right
@@ -299,7 +299,7 @@ public:
      * @param index The index of element to get a reference
      * @return const reference of the element
      */
-    const reference_type at(uint32 index) const {
+    const_reference_type at(uint32 index) const {
         return m_block.getData()[index];
     }
 
@@ -310,7 +310,7 @@ public:
      * 
      * @return const reference to the first element
      */
-    const reference_type front() const {
+    const_reference_type front() const {
         return m_block.getData()[0];
     }
 
@@ -321,7 +321,7 @@ public:
      * 
      * @return reference to the last element 
      */
-    const reference_type back() const {
+    const_reference_type back() const {
         return m_block.getData()[m_size - 1];
     }
 
@@ -333,7 +333,7 @@ public:
      * @return true if the element is present,
      * false otherwise
      */
-    bool contains(const reference_type element) const  {
+    bool contains(const_reference_type element) const  {
         for(uint32 i = 0; i < m_size; i++)
             if(m_block.getData()[i] == element) return true;
         
@@ -361,7 +361,7 @@ public:
      * 
      * @todo implement
      */
-    int32 find(const reference_type element) const {
+    int32 find(const_reference_type element) const {
         for(uint32 i = 0; i < m_size; i++) {
             if(m_block.getData()[i] == element) return i;
         }
@@ -371,18 +371,25 @@ public:
     
     /**
      * @brief Returns a const pointer to the memory block storing the vector data.
-     * 
-     * @return const ptr_type - handle to memory block data
+     * @return handle to memory block data
      */
     const ptr_type to_array() const {
         return static_cast<const ptr_type>(m_block.getData());
     }
 
 
+    /**
+     * @brief Returns a iterator pointing to the first element
+     * @return vector::iterator object 
+     */
     iterator begin() const {
         return iterator(m_block.getData());
     }
 
+    /**
+     * @brief Returns an iterator pointing to the end of the vector
+     * @return vector::iterator object
+     */
     iterator end() const {
         return iterator(m_block.getData() + m_size);
     }
@@ -429,17 +436,6 @@ public:
 
         m_size = v.m_size;
         m_block = v.m_block;
-
-        // m_size = v.m_size;
-        // m_capacity = v.m_capacity;
-        
-        // // free the existing memory
-        // if(m_arr != nullptr)
-        //     free(m_arr);
-        
-        // // reallocating with new size
-        // m_arr = malloc(sizeof(value_type) * m_capacity);
-        // memcpy(m_arr, v.m_arr, m_size * sizeof(value_type)); // copying new data
     }
 
 
@@ -450,7 +446,6 @@ public:
      * @return reference_type 
      */
     reference_type operator [](uint32 index) {
-        // return m_arr[index];
         assert(index < m_size);
         return m_block.getData()[index];
     }

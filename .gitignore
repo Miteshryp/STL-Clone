@@ -1,5 +1,6 @@
 .vscode
 *.txt
+.buildconfig
 
 tests/*.out
 tests/*.exe

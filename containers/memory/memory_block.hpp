@@ -82,16 +82,8 @@ namespace pixel {
          // Shallow Copy
          m_allocated = block.m_allocated;
          m_arr = malloc(m_allocated);
+         
          memcpy(m_arr, block.m_arr, m_allocated);
-
-         // // Deep copy
-         // ptr_type arr_type = static_cast<ptr_type>(m_arr);
-         // ptr_type block_arr_type = static_cast<ptr_type>(block.m_arr);
-
-         // uint32 capacity = block.getCapacity();
-         // for(int i = 0; i < capacity; i++) {
-         //    arr_type[i] = block_arr_type[i]; // deep copy
-         // }
       }
 
       /**
@@ -141,12 +133,16 @@ namespace pixel {
 
       /**
        * @brief Get the data handle to the allocated data 
-       * @return A data_handle (of void* type) to the allocated data.
+       * @return A data_handle (void*) to the allocated data.
        */
       ptr_type getData() {
          return static_cast<ptr_type>(m_arr);
       }
 
+      /**
+       * @brief Get the data handle to the end of the allocated data
+       * @return a data handle (void*) to the allocated data
+       */
       ptr_type getDataEnd() {
          return static_cast<ptr_type>( (ptr_type)(((char*)m_arr) + m_allocated) );
       }
@@ -158,6 +154,10 @@ namespace pixel {
        */
       const ptr_type getData() const {
          return static_cast<const ptr_type>(m_arr);
+      }
+
+      const ptr_type getDataEnd() const {
+         return static_cast<const ptr_type>( (ptr_type)(((char*)m_arr) + m_allocated) );
       }
 
 
