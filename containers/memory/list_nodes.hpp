@@ -5,13 +5,18 @@ namespace pixel {
 
 
 /**
- * @brief Wrapper class for nodes
+ * @brief Parent class for all types of list node
+ * This class acts as an interface which allows 
+ * integration of the child node type with the 
+ * node store class
  * 
+ * @tparam T 
  */
 class __Pixel_Node {
 public:
-    // __Pixel_Node() = delete;
     __Pixel_Node()
+        :
+        m_data(nullptr)
     {}
 
     __Pixel_Node(void* data)
@@ -22,26 +27,50 @@ public:
     ~__Pixel_Node()
     {}
 
-protected:
-    void* m_data;
 
+/**
+ * Interface for child classes
+ */
+protected:
     virtual void* getNextPtr() const = 0;
     virtual void setNextPtr(void* ptr) = 0;
 
     virtual void destruct_data() = 0;
+
+
+/**
+ * Data members
+ */
+protected:
+    void* m_data;
 };
 
     
-template<typename T>
-class Pixel_DLL_Node : public __Pixel_Node {
-    using value_type = T;
-    using ptr_type = T*;
-    using reference_type = T&;
-    using const_reference_type = T const&;
 
-    using node_type = Pixel_DLL_Node<T>;
-    using node_ptr = Pixel_DLL_Node<T>*;
-    using node_reference = Pixel_DLL_Node<T>&;
+
+
+
+
+
+
+
+
+/**
+ * @brief Node class describing the structure of 
+ * a node in doubly linked list
+ * 
+ * @tparam T 
+ */
+template<typename Value_Type>
+class Pixel_DLL_Node : public __Pixel_Node {
+    using value_type = Value_Type;
+    using ptr_type = Value_Type*;
+    using reference_type = Value_Type&;
+    using const_reference_type = Value_Type const&;
+
+    using node_type = Pixel_DLL_Node<Value_Type>;
+    using node_ptr = Pixel_DLL_Node<Value_Type>*;
+    using node_reference = Pixel_DLL_Node<Value_Type>&;
 
 public:
     Pixel_DLL_Node()
@@ -122,17 +151,17 @@ public:
 
 
 
-template<typename T>
+template<typename Value_Type>
 class Pixel_LL_Node : public __Pixel_Node {
 
-    using value_type = T;
-    using reference_type = T&;
-    using const_reference_type = T const&;
-    using ptr_type = T*;
+    using value_type = Value_Type;
+    using reference_type = Value_Type&;
+    using const_reference_type = Value_Type const&;
+    using ptr_type = Value_Type*;
 
-    using node_type = Pixel_LL_Node<T>;
-    using node_ptr = Pixel_LL_Node<T>*;
-    using node_reference = Pixel_LL_Node<T>&;
+    using node_type = Pixel_LL_Node<Value_Type>;
+    using node_ptr = Pixel_LL_Node<Value_Type>*;
+    using node_reference = Pixel_LL_Node<Value_Type>&;
 
 public:
     

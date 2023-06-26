@@ -2,13 +2,10 @@
 #include <vector>
 #include <list>
 
-// #include"containers/memory/node_store.hpp"
 
-// #include "containers/vector.hpp"
 #include "containers/list.hpp"
-
+#include "containers/queue.hpp"
 // #include "containers/vector.hpp"
-// #include "./types/non-pointers-structures.hpp"
 
 class A {
 public:
@@ -45,33 +42,34 @@ int k;
 };
 
 int main() {
-    pixel::list<B> new_list = { B(1), B(2), B(3) };
-    std::cout << "\n\n";
+    pixel::queue<B> q;
 
-    auto a = new_list.back();
-    new_list.pop_back();
+    B a(2);
+    B b(4);
+    B c(6);
 
-    std::cout << "Stop 1\n";
+    q.push(a);
+    q.push(b);
+    q.push(c);
 
-    auto b = new_list.front();
-    new_list.pop_front();
+    std::cout << "Original size: " << q.size() << std::endl;
 
-    std::cout << "Stop 2\n";
+    const B& front = q.front();
+    const B& back = q.back();
 
-    // not working 
-    int k = new_list.find(B(3));
-    int l = new_list.find(B(7));
+    std::cout << "Front value: " << front.k << std::endl;
+    std::cout << "Back value: " << back.k << std::endl;
 
-    std::cout << k << "\t" << l << std::endl;
+    q.pop();
 
-    a.sample();
-    b.sample();
+    std::cout << "New size: " << q.size() << "\tCapacity: " << q.capacity() << std::endl;
 
-    // std::vector<B> vec = { B(1), B(2) };
-    
-    // vec.pop_back();
-    // std::cout << "Here\n";
+    const B& new_front = q.front();
+    const B& new_back = q.back();
 
-    std::cout << "Stop 3\n";
+    std::cout << "New front value: " << new_front.k << std::endl;
+    std::cout << "New back value: " << new_back.k << std::endl;
 
+    std::cout << q.empty() << '\t' << q.remaining_capacity() << std::endl;  
+    std::cout << "---END---\n   ";
 }

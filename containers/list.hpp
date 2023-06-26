@@ -91,7 +91,8 @@ public:
         m_head(nullptr),
         m_tail(nullptr),
         m_size(0)
-    {   
+    {
+        this->copy_list(list);
     }
 
     list(list_type&& linkedList) 
@@ -190,7 +191,7 @@ public:
         // Special case - single node
         if(m_head == m_tail) {
             value_type ret = m_head->getDataValue();
-            this->delete_all_nodes();
+            this->clear();
         }
         
         
@@ -220,7 +221,7 @@ public:
         assert(m_head != nullptr && m_tail != nullptr);
 
         if(m_head == m_tail) {
-            this->delete_all_nodes();
+            this->clear();
             return;
         }
 
@@ -243,7 +244,7 @@ public:
      * @param index index to be deleted
      * @return void
      */
-    void pop_at(const uint32& index) {
+    void erase(const uint32& index) {
         assert(m_head != nullptr && m_tail != nullptr);
         assert(index < m_size);
 
@@ -262,6 +263,52 @@ public:
 
         this->store_push(removed_node);
     }
+
+
+
+
+    /**
+     * @brief Inserts the element at the specified index
+     * 
+     * @param element value to be inserted
+     * @param index index at which value is to be inserted.
+     */
+    void insert(const_reference_type element, const uint32& index) {
+        assert(m_head != nullptr && m_tail != nullptr);
+        assert(index < m_size);
+
+
+        // Edge insertions are already handled
+        if(index == 0) {
+            this->push_front(element);
+            return;
+        }
+        if(index == m_size - 1) {
+            this->push_back(element);
+            return;
+        }
+
+
+        // Extracting node
+        node_ptr temp = m_head;
+        uint32 next_index = 1; // index of the next element
+        while(next_index < index) {
+            temp = temp->m_next;
+            next_index++;
+        }
+
+        // Insert the node at the calculated position
+        node_ptr new_node = this->store_pop();
+        new_node->setDataValue(element);
+        new_node->setNextPtr(temp->getNextPtr());
+
+        temp->setNextPtr(new_node);
+
+        m_size++;
+    }
+
+
+
 
 
 
@@ -293,9 +340,9 @@ public:
  * the node store
  * 
  */
-    void delete_all_nodes() {
+    void clear() {
+        if(m_head == nullptr) return; // empty list
         node_ptr node = m_head;
-        if(node == nullptr) return;
 
         while(node != nullptr) {
             node_ptr temp = node->m_next;
@@ -307,12 +354,22 @@ public:
             node = temp;
         }
 
-
+        // @TODO: Decide whether we should do this or not
         this->m_store.flush_nodes(); // flushing all nodes in the store
 
         m_head = nullptr;
         m_tail = nullptr;
         m_size = 0;
+    }
+
+
+    /**
+     * @brief Used to free the extra space allocated
+     * as part of memory management stategy.
+     * 
+     */
+    void shrink() {
+        this->store_flush();
     }
 
 
@@ -331,7 +388,7 @@ public:
 
 
     /***
-     * @brief Can be used to fetch a constant reference of the item at the end of the linked list.
+     * @brief Used to get a constant reference of the item at the end of the linked list.
      * @returns A reference to the data value in the tail node.
     */
     const_reference_type back() const {
@@ -390,7 +447,8 @@ public:
      * @brief Returns the remaining capacity of the list before a 
      * block allocation is required.
      * 
-     * @return the remaining number of nodes which can be inserted.
+     * @return the remaining number of elements 
+     * which can be inserted.
      */
     uint32 remaining_capacity() const noexcept {
         return this->m_store.size();
@@ -470,7 +528,7 @@ public:
      * @param list List to be copied over
      */
     void operator = (const_reference_type list) {
-        
+        this->copy_list(list);
     }
 
 
@@ -498,8 +556,8 @@ protected:
 
 
         // Configuring tail node
-        new_node->setDataValue(item);
         new_node->setNextPtr(nullptr);
+        new_node->setDataValue(static_cast<value_type&&>(item));
 
         return new_node;
     }
@@ -508,8 +566,8 @@ protected:
 
 
         // Configuring tail node
-        new_node->setDataValue(item);
         new_node->setNextPtr(nullptr);
+        new_node->setDataValue(item);
 
         return new_node;
     }
@@ -528,8 +586,10 @@ protected:
         node_ptr new_node = this->store_pop();
 
         // Configuring head node
-        new_node->setDataValue(item);
         new_node->setNextPtr(m_head);
+        new_node->setDataValue(item);
+        new_node->setDataValue(item);
+
         
         return new_node;
     }
@@ -540,6 +600,8 @@ protected:
         // Configuring head node
         new_node->setDataValue(item);
         new_node->setNextPtr(m_head);
+        new_node->setDataValue(static_cast<value_type&&>(item));
+
 
         return new_node;
     }
@@ -548,7 +610,9 @@ protected:
 
 
 
-    void copy(const list& list) {
+
+private:
+    void copy_list(const list& list) {
         // Empty list edge case
         if(list.size() == 0) {
             m_head = nullptr;
@@ -568,23 +632,25 @@ protected:
         }
 
         // Iteration counters
-        uint32 curr_index = 0;
         node_ptr curr_list_node = (node_ptr)(list.m_head->getNextPtr());
 
         // Creating the head node
         m_head = this->create_front_node(list.m_head->getDataValue());
         node_ptr prev_node = m_head;
+        uint32 curr_size = 1;
 
 
         // Copying each node of the list
-        while(curr_index < list.size()) {
+        while(curr_size < list.size()) {
             node_ptr new_node = this->create_back_node(curr_list_node->getDataValue());
             prev_node->setNextPtr(new_node);
-            curr_index++;
+            prev_node = new_node;
+
+            curr_size++;
         }
 
         // Configuring tail node
-        m_tail = (node_ptr)(prev_node->getNextPtr());
+        m_tail = prev_node;
         m_size = list.size();
     }
 
@@ -592,8 +658,6 @@ private:
     node_ptr m_head;
     node_ptr m_tail;
     uint32 m_size;
-
-    // pixel::node_store<node_type> m_store;
 };
 
 }
