@@ -120,8 +120,10 @@ public:
     }
 
 public:
-    void operator = (const_deque_reference d);
-    void operator = (deque_type&& d);
+    void operator = (const_deque_reference d)
+    {
+        m_list = d.m_list;
+    }
     
 
 

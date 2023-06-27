@@ -6,12 +6,6 @@
 namespace pixel {
 
 
-struct __px_stack_settings {
-   static int min_capacity;
-};
-
-int __px_stack_settings::min_capacity = 10;
-
 template<typename T>
 class stack { 
 

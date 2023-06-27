@@ -2,5 +2,6 @@
 *.txt
 .buildconfig
 
-tests/*.out
-tests/*.exe
+docs
+**/*.out
+**/*.exe
