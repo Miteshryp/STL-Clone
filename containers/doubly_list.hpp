@@ -6,7 +6,7 @@
 
 #include "containers/utils/iterator.hpp"
 #include "containers/memory/list_nodes.hpp"
-#include "containers/memory/node_store.hpp"
+#include "containers/memory/node_allocator.hpp"
 
 namespace pixel {
 
@@ -25,7 +25,6 @@ class doubly_list : public pixel::node_allocator<pixel::Pixel_DLL_Node<Value_Typ
     using list_reference_type = doubly_list<value_type>&;
     using const_list_reference_type = doubly_list<value_type> const&;
     using list_ptr_type = doubly_list<value_type>*;
-    // using list_Rreference_type = doubly_list<T>&&;
 
     using node_type = Pixel_DLL_Node<value_type>;
     using node_ptr = Pixel_DLL_Node<value_type>*;
@@ -58,6 +57,12 @@ public:
         this->copy_list(list);
     }
 
+
+    /**
+     * @brief RValue move constructor
+     * 
+     * @param list RValue doubly linked list
+     */
     doubly_list(list_type&& list)
         :
         allocator_type(),
@@ -105,6 +110,13 @@ public:
         return this->m_store.size();
     }
 
+    /**
+     * @brief Returns whether the doubly linked list
+     * is empty or not
+     * 
+     * @return true if container is empty,
+     * @return false otherwise
+     */
     bool empty() const {
         return m_size == 0;
     }

@@ -180,7 +180,6 @@ public:
 // Data members
 private:
    int m_size;
-   // ptr_type m_arr;
    memory_block<T> m_block;
 
 };

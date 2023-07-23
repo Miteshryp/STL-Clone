@@ -6,7 +6,7 @@
 
 #include "containers/utils/types.hpp"
 #include "containers/utils/iterator.hpp"
-#include "containers/memory/node_store.hpp"
+#include "containers/memory/node_allocator.hpp"
 #include "containers/memory/list_nodes.hpp"
 
 namespace pixel {

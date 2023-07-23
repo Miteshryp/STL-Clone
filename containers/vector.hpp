@@ -34,6 +34,16 @@ public:
     {
     }
 
+    vector(uint32 size, const_reference_type default_value = value_type())
+        :
+        m_block(size),
+        m_size(size)
+    {
+        for(int i = 0; i < size; i++) {
+            m_block.getData()[i] = default_value;
+        }
+    }
+
     vector(std::initializer_list<value_type> init_list)
         :
         m_block(init_list.size()),
@@ -352,6 +362,25 @@ public:
         return m_size == 0;
     }
     
+    /**
+     * @brief MapReduce operation on the values of 
+     * the container based on the lambda function 
+     * provided
+     * 
+     * @return auto 
+     */
+    template<typename Func>
+    value_type aggregate(const Func& aggregator) const {
+        assert(m_size > 0);
+        if(m_size == 1) return m_block.getData()[0];
+        
+        value_type aggregated_value = m_block.getData()[0];
+        for(int i = 1; i < this->size(); i++) {
+            aggregated_value = aggregator(aggregated_value, m_block.getData()[i]);
+        }
+
+        return aggregated_value;
+    }
 
     /**
      * @brief Finds the first occurance of an element in the vector
@@ -410,12 +439,12 @@ public:
      * types, the element's destructor is called.
      * 
      * 
-     * @param new_capacity new required required
+     * @param new_element_capacity new required required
      */
-    void realloc_capacity(uint32 new_capacity) {
-        assert(new_capacity >= m_size); // cannot shrink to delete elements
+    void reserve(uint32 new_element_capacity) {
+        assert(new_element_capacity >= m_size); // cannot shrink to delete elements
 
-        memory_block_type new_block(new_capacity);
+        memory_block_type new_block(new_element_capacity);
         memcpy(new_block.getData(), m_block.getData(), m_size * sizeof(value_type));
 
         this->release_block_memory();
@@ -429,7 +458,7 @@ public:
     /**
      * @brief Copy operator
      * 
-     * @param v 
+     * @param v const vector reference
      */
     void operator = (const vector_type& v) {
         this->release_block_memory();

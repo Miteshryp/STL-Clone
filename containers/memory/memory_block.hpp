@@ -55,12 +55,12 @@ namespace pixel {
        * @brief Construct a new Pixel Memory Block object, which allocates a memory block 
        * capable of storing CAPACITY elements of type T
        * 
-       * @param capacity Capacity of the memory block (Count of element of type T)
+       * @param element_capacity Capacity of the memory block (Count of element of type T)
        */
-      memory_block(uint32 capacity = s_default_block_capacity) 
+      memory_block(uint32 element_capacity = s_default_block_capacity) 
       {
-         m_arr = (data_handle)malloc(capacity * sizeof(value_type));
-         m_allocated = capacity * sizeof(T);
+         m_arr = (data_handle)malloc(element_capacity * sizeof(value_type));
+         m_allocated = element_capacity * sizeof(T);
       }
 
       
