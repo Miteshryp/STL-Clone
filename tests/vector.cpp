@@ -61,22 +61,34 @@ void suiteCleanup() {
 
 TestSuite(vectorTestSuite, .init=suiteSetup, .fini=suiteCleanup);
 
-Test(vectorTestSuite, memoryTest) {
-    pixel::vector<A*> v;
 
-    v.push(new B(3));
-    v.push(new B(6));
-    v.push(new B(7));
+Test(vectorTestSuite, aggregationTest) {
+    pixel::vector<int> v(5, 9);
+    auto k = v.aggregate([](auto a, auto b) -> int {
+        return a * b;
+    });
 
-    // for(int i = 0; i < v.size(); i++) {
-    //     v[i]->sample();
-    //     std::cout << sizeof(*(v[i])) << std::endl;
-    // }
-
-    std::cout << sizeof(int*) << std::endl;
-    std::cout << sizeof(A) << "\t" << sizeof(B) << std::endl;
-    std::cout << sizeof(*(v[0])) << "\t" << sizeof(*(v[1])) << std::endl;
+    std::cout << k << std::endl;
 }
+
+
+
+// Test(vectorTestSuite, memoryTest) {
+//     pixel::vector<A*> v;
+
+//     v.push(new B(3));
+//     v.push(new B(6));
+//     v.push(new B(7));
+
+//     // for(int i = 0; i < v.size(); i++) {
+//     //     v[i]->sample();
+//     //     std::cout << sizeof(*(v[i])) << std::endl;
+//     // }
+
+//     std::cout << sizeof(int*) << std::endl;
+//     std::cout << sizeof(A) << "\t" << sizeof(B) << std::endl;
+//     std::cout << sizeof(*(v[0])) << "\t" << sizeof(*(v[1])) << std::endl;
+// }
 
 
 // pixel::vector<int> *int_vector = nullptr;
