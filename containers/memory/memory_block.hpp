@@ -38,7 +38,6 @@ namespace pixel {
     * This structure is just a memory space for the T type. It does not call the 
     * constructor or destructor of T
     * 
-    * @todo Proper Testing
     */
    template<typename T>
    class memory_block {

@@ -1,8 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <list>
-#include <unordered_map>
-
 
 #include "containers/list.hpp"
 #include "containers/queue.hpp"
@@ -43,34 +38,35 @@ int k;
 };
 
 int main() {
-    pixel::queue<B> q;
 
-    B a(2);
-    B b(4);
-    B c(6);
+    // pixel::queue<B> q;
 
-    q.push(a);
-    q.push(b);
-    q.push(c);
+    // B a(2);
+    // B b(4);
+    // B c(6);
 
-    std::cout << "Original size: " << q.size() << std::endl;
+    // q.push(a);
+    // q.push(b);
+    // q.push(c);
 
-    const B& front = q.front();
-    const B& back = q.back();
+    // std::cout << "Original size: " << q.size() << std::endl;
 
-    std::cout << "Front value: " << front.k << std::endl;
-    std::cout << "Back value: " << back.k << std::endl;
+    // const B& front = q.front();
+    // const B& back = q.back();
 
-    q.pop();
+    // std::cout << "Front value: " << front.k << std::endl;
+    // std::cout << "Back value: " << back.k << std::endl;
 
-    std::cout << "New size: " << q.size() << "\tCapacity: " << q.capacity() << std::endl;
+    // q.pop();
 
-    const B& new_front = q.front();
-    const B& new_back = q.back();
+    // std::cout << "New size: " << q.size() << "\tCapacity: " << q.capacity() << std::endl;
 
-    std::cout << "New front value: " << new_front.k << std::endl;
-    std::cout << "New back value: " << new_back.k << std::endl;
+    // const B& new_front = q.front();
+    // const B& new_back = q.back();
 
-    std::cout << q.empty() << '\t' << q.remaining_capacity() << std::endl;  
-    std::cout << "---END---\n   ";
+    // std::cout << "New front value: " << new_front.k << std::endl;
+    // std::cout << "New back value: " << new_back.k << std::endl;
+
+    // std::cout << q.empty() << '\t' << q.remaining_capacity() << std::endl;  
+    // std::cout << "---END---\n   ";
 }

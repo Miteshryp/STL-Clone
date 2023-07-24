@@ -7,7 +7,8 @@ namespace pixel
 {
 using namespace pixel::types;
 
-
+// @todo: document methods
+// @todo: implement iterator methods
 template<typename Value_Type>
 class queue {
 

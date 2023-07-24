@@ -18,6 +18,7 @@ class stack {
    using stack_Rreference_type = stack<T>&&;
    using stack_ptr_type = stack<T>*;
 
+public:
    using iterator = BasicIterator<T>;
 
 public:

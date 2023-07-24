@@ -32,6 +32,7 @@ class list : public node_allocator<Pixel_LL_Node<T>, T> {
     using allocator_type = pixel::node_allocator<node_type, value_type>;
 
     // using iterator = BasicIterator<T>;
+public:
     using iterator = LLNodeIterator<T>;
 
 public:

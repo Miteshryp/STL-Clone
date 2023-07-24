@@ -146,7 +146,7 @@ namespace pixel
     public:
         /**
          * @brief Move operator
-         * @todo
+         * @todo implement
          * @param store
          */
         void operator=(store_value &&store)

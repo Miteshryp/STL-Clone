@@ -24,6 +24,7 @@ class vector {
     using memory_block_type = pixel::memory_block<T>;
     using memory_block_ptr = pixel::memory_block<T>*;
 
+public:
     using iterator = pixel::BasicIterator<T>;
 
 public:
@@ -117,21 +118,18 @@ public:
 
 
     /**
-     * @todo test => complete the pop function to deal with the return value 
-     * if it is not to be accepted outside the method call
      * 
      * @return value_type 
      */
     void pop() {
-        // return static_cast<value_type&&>(m_block.getData()[--m_size]);
-
         // running the element destructor
-        m_block.getData()[--m_size]->~value_type();
+        m_block.getData()[--m_size].~value_type();
     }
 
     /**
      * @brief Erases 'count' elements present in the array starting from 
      * index passed in as the argument
+     * @todo retest [bug fixed]
      * 
      * @param index index from where to start the erase operation
      * @param count the number of elements to be erased
@@ -140,20 +138,23 @@ public:
      */
     bool erase(uint32 index, uint32 count) {
         /**
-         * @todo remove [count] elements starting from [index]
+         * @done remove [count] elements starting from [index]
          * 
          * - Iterator value should remain same
          *   Therefore, we'll have to shift the elements backwords
          * - Cost(Shifting) < Cost(Rebuilding the array) 
          */
-        assert(index < m_size && index + count);
+        assert(index < m_size && index + count < m_size);
 
         // cleaning up the object stored.
-        m_block.getData()[index]->~value_type();
+        // m_block.getData()[index]->~value_type();
+        for(int i = 0; i < count; i++)
+            m_block.getData()[index + i].~value_type();
 
         // shifting all the elements after the index by one
         // NOTE: We use memmove to ensure memory safety during overlapping memory move.
-        memmove(m_block.getData()[index], m_block.getData()[index + 1], sizeof(value_type) * (m_size - index + 1));
+        memmove(m_block.getData()[index], m_block.getData()[index + count], sizeof(value_type) * (m_size - (index + count)));
+        // memmove(m_block.getData()[index], m_block.getData()[index + 1], sizeof(value_type) * (m_size - index + 1));
         m_size--;
 
         return true;
@@ -234,12 +235,12 @@ public:
      * @warning This function recreates the array to exactly fit the size of array.
      * Unrestricted use may cause performance issues.
      * 
+     * @todo test
+     * 
      * @return true on successful shrink operation
      * @return false shrink failed
      */
     bool shrink() {
-        // @TODO - shrink the capacity to fit the
-        //         current elements only.
         memory_block_type new_block(m_size);
         memcpy(new_block.getData(), m_block.getData(), new_block.getTotalAllocation());
 
@@ -388,7 +389,6 @@ public:
      * @param element 
      * @return The index of first occurance of element.
      * 
-     * @todo implement
      */
     int32 find(const_reference_type element) const {
         for(uint32 i = 0; i < m_size; i++) {
