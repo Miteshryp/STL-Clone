@@ -3,6 +3,8 @@
 #include "containers/vector.hpp"
 #include "containers/list.hpp"
 
+#include "containers/utils/iterators/unordered_map_iterator.hpp"
+
 
 #define PX_DEFAULT_LOAD_FACTOR 0.75f
 
@@ -92,7 +94,7 @@ public:
 
 
   value_reference_type operator [] (key_type key) {
-
+    
   }
 
 // Data members
@@ -131,6 +133,8 @@ class unordered_map
   using bucket_type = pixel::list<pixel::pair<Key_Type, Value_Type>>;
   using const_bucket_reference_type = pixel::list<pixel::pair<Key_Type, Value_Type>> const&;
 public:
+
+  using iterator = HashTableIterator<Key_Type, Value_Type>;
   
   unordered_map()
   {
@@ -146,6 +150,13 @@ public:
   {
     // @todo: implement
   }
+
+  unordered_map(uint32 reserve) 
+    :
+    m_table(reserve)
+  {
+    // @todo: implement
+  } 
   
   // @todo: implement initialiser map constructor
 

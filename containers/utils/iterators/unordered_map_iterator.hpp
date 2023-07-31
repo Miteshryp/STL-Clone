@@ -5,6 +5,10 @@
 #include "containers/list.hpp"
 #include "containers/vector.hpp"
 
+
+
+#include <functional>
+
 // hashtable iterator -> list iterator + vector iterator
 namespace pixel {
 using namespace pixel::types;
@@ -33,22 +37,43 @@ public:
     }
     
     // postfix operator
-    void operator ++ (int) {
+    iterator operator ++ (int) {
         iterator ret = *this;
         m_list_iterator++;
+        return ret;
     }
-    void operator -- () {}
-    void operator -- (int) {}
 
+
+
+
+
+    /**
+     * @brief Returns whether the iterators are EQUAL or not
+     * 
+     * @param iter 
+     * @return true if the iterators are equal,
+     * @return false otherwise
+     */
     bool operator == (const_iterator_reference iter) const {
-
+        return m_list_iterator == iter.m_list_iterator;
     }
 
+    /**
+     * @brief Returns whether the 2 iterators are UNEQUAL or not
+     * 
+     * @param iter 
+     * @return true if iterators are not equal,
+     * @return false otherwise
+     */
     bool operator != (const_iterator_reference iter) const {
-
+        return !(*this == iter);
     }
 
-
+    /**
+     * @brief Returns a reference to the pair stored in the bucket iterator
+     * 
+     * @return reference of pair type 
+     */
     pair_reference_type operator * () {
         return *m_list_iterator;
     }

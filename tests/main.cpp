@@ -1,7 +1,10 @@
 
 #include "containers/list.hpp"
 #include "containers/queue.hpp"
+#include "containers/unordered_map.hpp"
 // #include "containers/vector.hpp"
+
+#include <iostream>
 
 class A {
 public:

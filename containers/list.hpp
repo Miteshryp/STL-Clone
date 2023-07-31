@@ -5,7 +5,7 @@
 #include <typeinfo>
 
 #include "containers/utils/types.hpp"
-#include "containers/utils/iterator.hpp"
+#include "containers/utils/iterators/list_iterator.hpp"
 #include "containers/memory/node_allocator.hpp"
 #include "containers/memory/list_nodes.hpp"
 

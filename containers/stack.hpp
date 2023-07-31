@@ -1,3 +1,5 @@
+#pragma once
+
 #include"containers/memory/memory_block.hpp"
 #include"containers/utils/iterator.hpp"
 
